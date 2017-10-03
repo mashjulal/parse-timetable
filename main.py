@@ -5,4 +5,4 @@ if __name__ == "__main__":
     # timetable_sheet = TimetableSheet()
     # timetable_sheet.generate_xls_file()
 
-    timetable_parser = TimetableParser()
+    timetable_parser = TimetableParser("БНБО-01-15")
