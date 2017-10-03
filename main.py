@@ -1,3 +1,5 @@
+import re
+
 from TimetableParser import TimetableParser
 from TimetableSheet import TimetableSheet
 
