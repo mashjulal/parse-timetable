@@ -1,13 +1,14 @@
-from functools import reduce
+import os
+import re
+import datetime
+from pprint import pprint
 
 import openpyxl
-import os
 
-import re
-from xdg.Locale import regex
-
-from Lesson import Lesson
 from TimetableSheet import TimetableSheet
+from lessons.Lab import Lab
+from lessons.Lecture import Lecture
+from lessons.Practice import Practice
 
 
 class TimetableParser:
@@ -21,7 +22,9 @@ class TimetableParser:
         self.workbook = openpyxl.load_workbook(TimetableParser.FILE_PATH)
         self.timetable_sheet = self.workbook["Лист1"]
         self.group_name = group_name
+        self.timetable = []
 
+        self.create_timetable_list()
         self.get_timetable()
 
     def get_group_column(self):
@@ -43,7 +46,10 @@ class TimetableParser:
         return column if found else None
 
     def get_timetable(self):
-        lessons = []
+        start_date = TimetableSheet.get_starting_date()
+        end_date = TimetableSheet.get_end_date()
+        week_count = ((end_date - start_date) // 7).days
+
         col = self.get_group_column()
 
         discipline_col = col
@@ -52,8 +58,15 @@ class TimetableParser:
         room_col = col + 3
 
         for row in range(4, 76):
+            tp = str(self.timetable_sheet.cell(row=row, column=type_col).value).lower()
+            lecturer = self.timetable_sheet.cell(row=row, column=lecturer_col).value
+            room = self.timetable_sheet.cell(row=row, column=room_col).value
+            weekday = (row - 4) // 12
+            is_week_odd = (row - 4) % 2 == 0
+            time = ((row - 4) % 12) // 2
+
             discipline = self.timetable_sheet.cell(row=row, column=discipline_col).value
-            weeks = list(range(1, 17))
+            weeks = list(range(0, week_count))
             if discipline:
                 if discipline.startswith("кр"):
                     discipline_match = \
@@ -67,16 +80,27 @@ class TimetableParser:
                     discipline = discipline_match.group(2)
                     weeks = [int(n) for n in discipline_match.group(1).split(",")]
 
-            tp = self.timetable_sheet.cell(row=row, column=type_col).value
-            lecturer = self.timetable_sheet.cell(row=row, column=lecturer_col).value
-            room = self.timetable_sheet.cell(row=row, column=room_col).value
-            weekday = TimetableSheet.WEEKDAYS[(row - 4) // 12]
-            is_week_odd = (row - 4) % 2 == 0
-            time = TimetableSheet.LECTURE_TIME[((row - 4) % 12) // 2]
+            if tp == "прак" or tp == "пр":
+                lesson = Practice(discipline, room, lecturer)
+            elif tp == "лек":
+                lesson = Lecture(discipline, room, lecturer)
+            else:
+                lesson = Lab(discipline, room, lecturer)
 
-            lesson = Lesson(discipline, weekday, time, room, tp, is_week_odd, lecturer, weeks)
-            lessons.append(lesson)
+            if is_week_odd:
+                weeks = [w for w in weeks if w % 2 == 0]
+            else:
+                weeks = [w for w in weeks if w % 2 == 1]
 
+            for week in weeks:
+                self.timetable[week-1][weekday][time] = lesson
+        pprint(self.timetable)
 
+    def create_timetable_list(self):
+        start_date = TimetableSheet.get_starting_date()
+        end_date = TimetableSheet.get_end_date()
+        week_count = ((end_date - start_date) // 7).days
 
-
+        self.timetable = [[[None for _ in range(6)]
+                           for __ in range(6)]
+                          for ___ in range(week_count+1)]

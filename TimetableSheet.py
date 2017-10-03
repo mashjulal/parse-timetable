@@ -15,11 +15,13 @@ class TimetableSheet:
 
     DATE_TEMPLATE = "%d.%m.%y"
 
-    WEEKS_COUNT = 16
+    WEEKS_COUNT = 0
 
     def __init__(self):
         self.workbook = xlwt.Workbook()
         self.worksheet = self.workbook.add_sheet("Timetable")
+
+        TimetableSheet.WEEKS_COUNT = TimetableSheet.get_week_count()
 
     def generate_xls_file(self):
         self.generate_weekdays_rows()
@@ -93,6 +95,13 @@ class TimetableSheet:
         end_date_weekday = end_date.weekday()
         end_date += datetime.timedelta(6 - end_date_weekday)
         return end_date
+
+    @staticmethod
+    def get_week_count():
+        start_date = TimetableSheet.get_starting_date()
+        end_date = TimetableSheet.get_end_date()
+        week_count = ((end_date - start_date) // 7).days
+        return week_count
 
     def generate_weeks(self):
         font = xlwt.Font()
