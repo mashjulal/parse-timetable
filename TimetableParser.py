@@ -1,11 +1,9 @@
 import os
 import re
-import datetime
-from pprint import pprint
 
 import openpyxl
 
-from TimetableSheet import TimetableSheet
+import utils
 from lessons.Lab import Lab
 from lessons.Lecture import Lecture
 from lessons.Practice import Practice
@@ -13,7 +11,7 @@ from lessons.Practice import Practice
 
 class TimetableParser:
 
-    PATTERN_SPECIFIC_WEEKS = "([0-9,]+) н ([А-Яа-я \-A-Za-z]+)"
+    PATTERN_SPECIFIC_WEEKS = "([0-9, ]+) н ([А-Яа-я \-A-Za-z]+)"
     PATTERN_EXCEPT_WEEKS = "кр ([0-9, ]+) н ([А-Яа-я \-A-Za-z]+)"
 
     FILE_PATH = os.getcwd() + "/generated_files/КБиСП 3 курс 1 сем.xlsx"
@@ -46,9 +44,7 @@ class TimetableParser:
         return column if found else None
 
     def get_timetable(self):
-        start_date = TimetableSheet.get_starting_date()
-        end_date = TimetableSheet.get_end_date()
-        week_count = ((end_date - start_date) // 7).days
+        week_count = utils.get_week_count()
 
         col = self.get_group_column()
 
@@ -66,7 +62,7 @@ class TimetableParser:
             time = ((row - 4) % 12) // 2
 
             discipline = self.timetable_sheet.cell(row=row, column=discipline_col).value
-            weeks = list(range(0, week_count))
+            weeks = list(range(1, week_count+2))
             if discipline:
                 if discipline.startswith("кр"):
                     discipline_match = \
@@ -88,18 +84,16 @@ class TimetableParser:
                 lesson = Lab(discipline, room, lecturer)
 
             if is_week_odd:
-                weeks = [w for w in weeks if w % 2 == 0]
-            else:
                 weeks = [w for w in weeks if w % 2 == 1]
+            else:
+                weeks = [w for w in weeks if w % 2 == 0]
 
+            print(weeks)
             for week in weeks:
                 self.timetable[week-1][weekday][time] = lesson
-        pprint(self.timetable)
 
     def create_timetable_list(self):
-        start_date = TimetableSheet.get_starting_date()
-        end_date = TimetableSheet.get_end_date()
-        week_count = ((end_date - start_date) // 7).days
+        week_count = utils.get_week_count()
 
         self.timetable = [[[None for _ in range(6)]
                            for __ in range(6)]

@@ -2,6 +2,9 @@ import xlwt
 import datetime
 import os
 
+from TimetableParser import TimetableParser
+import utils
+
 
 class TimetableSheet:
 
@@ -21,12 +24,15 @@ class TimetableSheet:
         self.workbook = xlwt.Workbook()
         self.worksheet = self.workbook.add_sheet("Timetable")
 
-        TimetableSheet.WEEKS_COUNT = TimetableSheet.get_week_count()
+        self.timetable_parser = TimetableParser("БНБО-01-15")
+
+        TimetableSheet.WEEKS_COUNT = utils.get_week_count()
 
     def generate_xls_file(self):
         self.generate_weekdays_rows()
         self.generate_lecture_times_column()
         self.generate_weeks()
+        self.generate_timetable()
         self.save()
 
     def generate_weekdays_rows(self):
@@ -81,28 +87,6 @@ class TimetableSheet:
                 top_row += 1
             top_row += 1
 
-    @staticmethod
-    def get_starting_date():
-        first_september = datetime.date(2017, 9, 1)
-        first_september_weekday = first_september.weekday()
-        starting_date = first_september - datetime.timedelta(first_september_weekday)
-        return starting_date
-
-    @staticmethod
-    def get_end_date():
-        first_september = datetime.date(2017, 9, 1)
-        end_date = first_september + datetime.timedelta(7*16)
-        end_date_weekday = end_date.weekday()
-        end_date += datetime.timedelta(6 - end_date_weekday)
-        return end_date
-
-    @staticmethod
-    def get_week_count():
-        start_date = TimetableSheet.get_starting_date()
-        end_date = TimetableSheet.get_end_date()
-        week_count = ((end_date - start_date) // 7).days
-        return week_count
-
     def generate_weeks(self):
         font = xlwt.Font()
         font.bold = True
@@ -124,9 +108,9 @@ class TimetableSheet:
 
         left_column = 2
 
-        start_date = TimetableSheet.get_starting_date()
-        dt = TimetableSheet.get_starting_date()
-        end_date = TimetableSheet.get_end_date()
+        start_date = utils.get_starting_date()
+        dt = utils.get_starting_date()
+        end_date = utils.get_end_date()
 
         while dt < end_date:
             top_row = 0
@@ -144,6 +128,19 @@ class TimetableSheet:
                 top_row, top_row, left_column, left_column+1, week_number, style=style)
             left_column += 2
             dt += datetime.timedelta(1)
+
+    def generate_timetable(self):
+        column = 2
+        for week_index, week in enumerate(self.timetable_parser.timetable):
+            row = 2
+            for day_index, day in enumerate(week):
+                for lesson_index, lesson in enumerate(day):
+                    if lesson:
+                        self.worksheet.write(row, column, lesson.discipline)
+                        self.worksheet.write(row, column+1, lesson.room)
+                    row += 1
+                row += 1
+            column += 2
 
     def save(self):
         self.workbook.save(TimetableSheet.FILE_PATH)
