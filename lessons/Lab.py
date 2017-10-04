@@ -18,9 +18,6 @@ class Lab(Lesson):
         borders.right = xlwt.Borders.MEDIUM
         borders.top = xlwt.Borders.MEDIUM
 
-        pattern = xlwt.Pattern()
-        pattern.pattern = xlwt.Pattern.SOLID_PATTERN
-
         style = xlwt.easyxf("pattern: pattern solid, fore_color blue")
         style.font = font
         style.alignment = align

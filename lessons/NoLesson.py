@@ -3,7 +3,18 @@ import xlwt
 from lessons.Lesson import Lesson
 
 
-class Practice(Lesson):
+class NoLesson(Lesson):
+
+    INSTANCE = None
+
+    def __init__(self):
+        super().__init__(None, None, None)
+
+    @staticmethod
+    def get_instance():
+        if not NoLesson.INSTANCE:
+            NoLesson.INSTANCE = NoLesson()
+        return NoLesson.INSTANCE
 
     def get_cell_style(self):
         font = xlwt.Font()
@@ -18,7 +29,7 @@ class Practice(Lesson):
         borders.right = xlwt.Borders.MEDIUM
         borders.top = xlwt.Borders.MEDIUM
 
-        style = xlwt.easyxf("pattern: pattern solid, fore_color green")
+        style = xlwt.XFStyle()
         style.font = font
         style.alignment = align
         style.borders = borders

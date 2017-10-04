@@ -7,6 +7,7 @@ import openpyxl
 import utils
 from lessons.Lab import Lab
 from lessons.Lecture import Lecture
+from lessons.NoLesson import NoLesson
 from lessons.Practice import Practice
 
 
@@ -62,6 +63,11 @@ class TimetableParser:
         room_col = col + 3
 
         for row in range(4, 76):
+            discipline = self.timetable_sheet.cell(row=row, column=discipline_col).value
+
+            if not discipline:
+                continue
+
             tp = str(self.timetable_sheet.cell(row=row, column=type_col).value).lower()
             lecturer = self.timetable_sheet.cell(row=row, column=lecturer_col).value
             room = self.timetable_sheet.cell(row=row, column=room_col).value
@@ -69,29 +75,26 @@ class TimetableParser:
             is_week_odd = (row - 4) % 2 == 0
             time = ((row - 4) % 12) // 2
 
-            discipline = self.timetable_sheet.cell(row=row, column=discipline_col).value
-            weeks = list(range(1, week_count+2))
-            if discipline:
-                if discipline.startswith("кр"):
-                    discipline_match = \
-                        re.fullmatch(TimetableParser.PATTERN_EXCEPT_WEEKS, discipline)
-                    discipline = discipline_match.group(2)
-                    weeks = [int(n) for n in range(1, 17)
-                             if n not in discipline_match.group(1).split(",")]
-                elif re.fullmatch(TimetableParser.PATTERN_SPECIFIC_WEEKS, discipline):
-                    discipline_match = \
-                        re.fullmatch(TimetableParser.PATTERN_SPECIFIC_WEEKS, discipline)
-                    discipline = discipline_match.group(2)
-                    weeks = [int(n) for n in discipline_match.group(1).split(",")]
+            weeks = list(range(1, week_count + 2))
+            if discipline.startswith("кр"):
+                discipline_match = \
+                    re.fullmatch(TimetableParser.PATTERN_EXCEPT_WEEKS, discipline)
+                discipline = discipline_match.group(2)
+                weeks = [int(n) for n in range(1, 17)
+                         if n not in discipline_match.group(1).split(",")]
+            elif re.fullmatch(TimetableParser.PATTERN_SPECIFIC_WEEKS, discipline):
+                discipline_match = \
+                    re.fullmatch(TimetableParser.PATTERN_SPECIFIC_WEEKS, discipline)
+                discipline = discipline_match.group(2)
+                weeks = [int(n) for n in discipline_match.group(1).split(",")]
 
+            lesson = None
             if tp == "прак" or tp == "пр":
                 lesson = Practice(discipline, room, lecturer)
             elif tp == "лек":
                 lesson = Lecture(discipline, room, lecturer)
             elif tp == "лаб":
                 lesson = Lab(discipline, room, lecturer)
-            else:
-                lesson = None
 
             if is_week_odd:
                 weeks = [w for w in weeks if w % 2 == 1]
@@ -110,6 +113,6 @@ class TimetableParser:
     def create_timetable_list(self):
         week_count = utils.get_week_count()
 
-        self.timetable = [[[None for _ in range(6)]
-                           for __ in range(6)]
-                          for ___ in range(week_count+1)]
+        self.timetable = [[[NoLesson.get_instance() for _ in range(6)]
+                           for _ in range(6)]
+                          for _ in range(week_count+1)]
