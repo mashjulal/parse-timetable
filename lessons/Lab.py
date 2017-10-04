@@ -1,12 +1,9 @@
 import xlwt
 
+from lessons.Lesson import Lesson
 
-class Lab:
 
-    def __init__(self, discipline, room, lecturer):
-        self.discipline = discipline
-        self.room = room
-        self.lecturer = lecturer
+class Lab(Lesson):
 
     def get_cell_style(self):
         font = xlwt.Font()

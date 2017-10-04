@@ -20,3 +20,7 @@ def get_week_count():
     end_date = get_end_date()
     week_count = ((end_date - start_date) // 7).days
     return week_count
+
+
+def get_acronym(words):
+    return "".join([word[0].upper() for word in words.split()])
