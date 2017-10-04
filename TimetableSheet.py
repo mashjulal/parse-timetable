@@ -136,8 +136,8 @@ class TimetableSheet:
             for day_index, day in enumerate(week):
                 for lesson_index, lesson in enumerate(day):
                     if lesson:
-                        self.worksheet.write(row, column, lesson.discipline)
-                        self.worksheet.write(row, column+1, lesson.room)
+                        self.worksheet.write(row, column, lesson.discipline, style=lesson.get_cell_style())
+                        self.worksheet.write(row, column+1, lesson.room, style=lesson.get_cell_style())
                     row += 1
                 row += 1
             column += 2

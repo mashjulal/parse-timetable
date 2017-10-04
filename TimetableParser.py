@@ -15,7 +15,7 @@ class TimetableParser:
     PATTERN_SPECIFIC_WEEKS = "([0-9, ]+) н ([А-Яа-я \-A-Za-z]+)"
     PATTERN_EXCEPT_WEEKS = "кр ([0-9, ]+) н ([А-Яа-я \-A-Za-z]+)"
 
-    FILE_PATH = os.getcwd() + "/generated_files/КБиСП 3 курс 1 сем.xlsx"
+    FILE_PATH = os.getcwd() + "/generated_files/official_timetable.xlsx"
 
     def __init__(self, group_name):
         self.workbook = openpyxl.load_workbook(TimetableParser.FILE_PATH)
@@ -88,8 +88,10 @@ class TimetableParser:
                 lesson = Practice(discipline, room, lecturer)
             elif tp == "лек":
                 lesson = Lecture(discipline, room, lecturer)
-            else:
+            elif tp == "лаб":
                 lesson = Lab(discipline, room, lecturer)
+            else:
+                lesson = None
 
             if is_week_odd:
                 weeks = [w for w in weeks if w % 2 == 1]
@@ -102,7 +104,6 @@ class TimetableParser:
                 (week == week_count + 1 and weekday < last_study_day_index) or
                 (1 < week < week_count + 1)]
 
-            print(weeks)
             for week in weeks:
                 self.timetable[week-1][weekday][time] = lesson
 
