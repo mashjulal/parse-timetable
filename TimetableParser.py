@@ -1,3 +1,4 @@
+import datetime
 import os
 import re
 
@@ -46,6 +47,13 @@ class TimetableParser:
     def get_timetable(self):
         week_count = utils.get_week_count()
 
+        first_study_day = datetime.date(2017, 9, 1)
+        last_study_day = first_study_day + datetime.timedelta(7*16)
+
+        first_study_day_index = first_study_day.weekday()
+        last_study_day_index = last_study_day.weekday()
+
+
         col = self.get_group_column()
 
         discipline_col = col
@@ -87,6 +95,12 @@ class TimetableParser:
                 weeks = [w for w in weeks if w % 2 == 1]
             else:
                 weeks = [w for w in weeks if w % 2 == 0]
+
+            weeks = \
+                [week for week in weeks
+                 if (week == 1 and weekday >= first_study_day_index) or
+                (week == week_count + 1 and weekday < last_study_day_index) or
+                (1 < week < week_count + 1)]
 
             print(weeks)
             for week in weeks:
