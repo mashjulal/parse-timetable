@@ -61,8 +61,6 @@ class TimetableSheet:
             top_row += 7
 
     def generate_lecture_times_column(self):
-        style = xlwt.XFStyle()
-
         font = xlwt.Font()
         font.bold = True
 
@@ -105,11 +103,10 @@ class TimetableSheet:
         style.alignment = align
         style.borders = borders
 
-
         left_column = 2
 
         start_date = utils.get_starting_date()
-        dt = utils.get_starting_date()
+        dt = start_date
         end_date = utils.get_end_date()
 
         while dt < end_date:
@@ -135,15 +132,16 @@ class TimetableSheet:
             row = 2
             for day_index, day in enumerate(week):
                 for lesson_index, lesson in enumerate(day):
-                    if lesson:
-                        self.worksheet.write(row, column, lesson.discipline, style=lesson.get_cell_style())
-                        self.worksheet.write(row, column+1, lesson.room, style=lesson.get_cell_style())
-                    else:
-                        self.worksheet.write(row, column, None, style=lesson.get_cell_style())
-                        self.worksheet.write(row, column + 1, None, style=lesson.get_cell_style())
+                    self.write_into_cell(row, column, lesson)
                     row += 1
                 row += 1
             column += 2
+
+    def write_into_cell(self, row, column, lesson):
+        self.worksheet.write(
+            row, column, lesson.discipline, style=lesson.get_cell_style())
+        self.worksheet.write(
+            row, column + 1, lesson.room, style=lesson.get_cell_style())
 
     def save(self):
         self.workbook.save(TimetableSheet.FILE_PATH)
