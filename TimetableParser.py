@@ -3,12 +3,7 @@ import re
 
 import openpyxl
 
-import utils
-from lessons.Lab import Lab
-from lessons.Lecture import Lecture
-from lessons.NoLesson import NoLesson
-from lessons.NonAcademicLesson import NonAcademic
-from lessons.Practice import Practice
+from Lessons import *
 
 
 class TimetableParser:
