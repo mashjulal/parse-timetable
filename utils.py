@@ -7,6 +7,7 @@ def get_starting_date():
     starting_date = first_september - datetime.timedelta(first_september_weekday)
     return starting_date
 
+
 def get_end_date():
     first_september = datetime.date(2017, 9, 1)
     end_date = first_september + datetime.timedelta(7 * 16)

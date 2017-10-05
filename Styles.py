@@ -7,7 +7,7 @@ class Styles:
                         "borders: left medium, right medium, top medium, bottom medium;"
                         "alignment: horiz center")
 
-    NON_STUDY = xlwt.easyxf("pattern: pattern solid, fore_color blue;"
+    NON_ACADEMIC = xlwt.easyxf("pattern: pattern solid, fore_color red;"
                             "font: bold on;"
                             "borders: left medium, right medium, top medium, bottom medium;"
                             "alignment: horiz center")

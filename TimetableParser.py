@@ -8,6 +8,7 @@ import utils
 from lessons.Lab import Lab
 from lessons.Lecture import Lecture
 from lessons.NoLesson import NoLesson
+from lessons.NonAcademicLesson import NonAcademic
 from lessons.Practice import Practice
 
 
@@ -25,6 +26,7 @@ class TimetableParser:
         self.timetable = []
 
         self.get_timetable()
+        self.add_non_academic_days()
 
     def get_group_column(self):
         row = 2
@@ -113,3 +115,18 @@ class TimetableParser:
             lesson = Lab(discipline, room, lecturer)
 
         return lesson
+
+    def add_non_academic_days(self):
+        first_non_academic_weekday = 0
+        last_non_academic_weekday = 5
+
+        first_academic_weekday = datetime.date(2017, 9, 1).weekday()
+        last_academic_weekday = first_academic_weekday
+
+        for day_i in range(first_non_academic_weekday, first_academic_weekday):
+            for lesson_i in range(6):
+                self.timetable[0][day_i][lesson_i] = NonAcademic.get_instance()
+
+        for day_i in range(last_academic_weekday, last_non_academic_weekday + 1):
+            for lesson_i in range(6):
+                self.timetable[-1][day_i][lesson_i] = NonAcademic.get_instance()
