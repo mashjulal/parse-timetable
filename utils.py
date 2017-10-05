@@ -46,4 +46,9 @@ def get_week_count():
 
 
 def get_acronym(words):
-    return "".join([word[0].upper() for word in words.split()]) if words else ""
+    if not words:
+        return ""
+    elif all(c.isupper() for c in words):
+        return words
+    return "".join([word[0].upper() for word in words.split()])
+

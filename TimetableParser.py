@@ -12,7 +12,7 @@ class TimetableParser:
     PATTERN_EXCEPT_WEEKS = "кр ([0-9, ]+) н ([А-Яа-я \-A-Za-z]+)"
     PATTERN_PRACTICE = "(практ|пр)"
     PATTERN_LECTURE = "лек"
-    PATTERN_LAB = "лаб"
+    PATTERN_LAB = "(лаб|лр)"
 
     FILE_PATH = os.getcwd() + "/files/official_timetable.xlsx"
 
