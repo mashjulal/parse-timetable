@@ -30,7 +30,10 @@ class TimetableSheet:
         self.generate_weekdays_rows()
         self.generate_lecture_times_column()
         self.generate_weeks()
+
+        self.timetable_parser.parse()
         self.generate_timetable()
+
         self.save()
 
     def generate_weekdays_rows(self):
@@ -52,11 +55,11 @@ class TimetableSheet:
     def generate_weeks(self):
         left_column = 2
 
-        start_date = utils.get_starting_date()
-        dt = start_date
-        end_date = utils.get_end_date()
+        first_non_academic_day = utils.get_first_non_academic_date()
+        dt = first_non_academic_day
+        last_non_academic_day = utils.get_last_non_academic_day()
 
-        while dt < end_date:
+        while dt < last_non_academic_day:
             top_row = 0
             self.worksheet.write(top_row, left_column,
                                  TimetableSheet.DISCIPLINE,
@@ -72,7 +75,7 @@ class TimetableSheet:
                     style=Styles.TITLE)
                 top_row += 7
                 dt += datetime.timedelta(1)
-            week_number = ((dt - start_date) // 7).days + 1
+            week_number = (dt - first_non_academic_day).days // 7 + 1
             self.worksheet.write_merge(
                 top_row, top_row, left_column, left_column+1,
                 week_number,

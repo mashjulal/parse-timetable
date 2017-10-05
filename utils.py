@@ -1,25 +1,47 @@
 import datetime
 
-
-def get_starting_date():
-    first_september = datetime.date(2017, 9, 1)
-    first_september_weekday = first_september.weekday()
-    starting_date = first_september - datetime.timedelta(first_september_weekday)
-    return starting_date
+TOTAL_ACADEMIC_DAYS = 7 * 16
 
 
-def get_end_date():
-    first_september = datetime.date(2017, 9, 1)
-    end_date = first_september + datetime.timedelta(7 * 16)
-    end_date_weekday = end_date.weekday()
-    end_date += datetime.timedelta(6 - end_date_weekday)
-    return end_date
+def get_first_academic_day():
+    cur_date = datetime.datetime.now()
+    cur_year, cur_month = cur_date.year, cur_date.month
+
+    if cur_month in range(8, 12 + 1):
+        first_academic_day = datetime.date(cur_year, 9, 1)
+    else:
+        date = datetime.date(cur_year, 2, 1)
+        date += datetime.timedelta(7)
+        first_academic_day = date - datetime.timedelta(date.weekday())
+
+    return first_academic_day
+
+
+def get_last_academic_day():
+    first_academic_day = get_first_academic_day()
+
+    return first_academic_day + datetime.timedelta(7*16)
+
+
+def get_first_non_academic_date():
+    first_academic_day = get_first_academic_day()
+    first_non_academic_day = \
+        first_academic_day - datetime.timedelta(first_academic_day.weekday())
+    return first_non_academic_day
+
+
+def get_last_non_academic_day():
+    first_academic_day = get_first_academic_day()
+    last_academic_day = first_academic_day + datetime.timedelta(TOTAL_ACADEMIC_DAYS)
+    last_non_academic_day = \
+        last_academic_day - datetime.timedelta(6 - last_academic_day.weekday())
+    return last_non_academic_day
 
 
 def get_week_count():
-    start_date = get_starting_date()
-    end_date = get_end_date()
-    week_count = ((end_date - start_date) // 7).days
+    first_non_academic_day = get_first_non_academic_date()
+    last_non_academic_day = get_last_non_academic_day()
+    week_count = (last_non_academic_day - first_non_academic_day).days // 7
     return week_count
 
 

@@ -25,6 +25,7 @@ class TimetableParser:
         self.group_name = group_name
         self.timetable = []
 
+    def parse(self):
         self.get_timetable()
         self.add_non_academic_days()
 
@@ -48,15 +49,14 @@ class TimetableParser:
 
     def get_timetable(self):
         self.init_timetable()
-        week_count = utils.get_week_count()
 
-        first_study_day = datetime.date(2017, 9, 1)
-        last_study_day = first_study_day + datetime.timedelta(7*16)
-        first_day_pos = first_study_day.weekday()
-        last_day_pos = week_count * 6 + last_study_day.weekday()
+        week_count = utils.get_week_count()
+        first_academic_day = utils.get_first_academic_day()
+        last_academic_day = utils.get_last_academic_day()
+        first_academic_day_weekday = first_academic_day.weekday()
+        last_academic_day_weekday = week_count * 6 + last_academic_day.weekday()
 
         col = self.get_group_column()
-
         discipline_col = col
         type_col = col + 1
         lecturer_col = col + 2
@@ -76,7 +76,7 @@ class TimetableParser:
             time = ((row - 4) % 12) // 2
 
             weeks = filter(
-                lambda week_i: first_day_pos <= (week_i - 1) * 6 + weekday < last_day_pos,
+                lambda week_i: first_academic_day_weekday <= (week_i - 1) * 6 + weekday < last_academic_day_weekday,
                 list(range(1 if is_week_odd else 2, week_count + 2, 2)))
 
             if discipline.startswith("кр"):
@@ -120,7 +120,7 @@ class TimetableParser:
         first_non_academic_weekday = 0
         last_non_academic_weekday = 5
 
-        first_academic_weekday = datetime.date(2017, 9, 1).weekday()
+        first_academic_weekday = utils.get_first_academic_day().weekday()
         last_academic_weekday = first_academic_weekday
 
         for day_i in range(first_non_academic_weekday, first_academic_weekday):
