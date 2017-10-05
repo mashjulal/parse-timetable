@@ -19,8 +19,6 @@ class TimetableSheet:
 
     DATE_TEMPLATE = "%d.%m.%y"
 
-    WEEKS_COUNT = utils.get_week_count()
-
     def __init__(self):
         self.workbook = xlwt.Workbook()
         self.worksheet = self.workbook.add_sheet("Timetable")

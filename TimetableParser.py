@@ -1,4 +1,3 @@
-import datetime
 import os
 import re
 
@@ -16,6 +15,9 @@ class TimetableParser:
 
     PATTERN_SPECIFIC_WEEKS = "([0-9, ]+) н ([А-Яа-я \-A-Za-z]+)"
     PATTERN_EXCEPT_WEEKS = "кр ([0-9, ]+) н ([А-Яа-я \-A-Za-z]+)"
+    PATTERN_PRACTICE = "(практ|пр)"
+    PATTERN_LECTURE = "лек"
+    PATTERN_LAB = "лаб"
 
     FILE_PATH = os.getcwd() + "/generated_files/official_timetable.xlsx"
 
@@ -53,8 +55,8 @@ class TimetableParser:
         week_count = utils.get_week_count()
         first_academic_day = utils.get_first_academic_day()
         last_academic_day = utils.get_last_academic_day()
-        first_academic_day_weekday = first_academic_day.weekday()
-        last_academic_day_weekday = week_count * 6 + last_academic_day.weekday()
+        first_academic_day_index = first_academic_day.weekday()
+        last_academic_day_index = week_count * 6 + last_academic_day.weekday()
 
         col = self.get_group_column()
         discipline_col = col
@@ -76,7 +78,7 @@ class TimetableParser:
             time = ((row - 4) % 12) // 2
 
             weeks = filter(
-                lambda week_i: first_academic_day_weekday <= (week_i - 1) * 6 + weekday < last_academic_day_weekday,
+                lambda week_i: first_academic_day_index <= (week_i - 1) * 6 + weekday < last_academic_day_index,
                 list(range(1 if is_week_odd else 2, week_count + 2, 2)))
 
             if discipline.startswith("кр"):
@@ -107,11 +109,11 @@ class TimetableParser:
     @staticmethod
     def get_lesson_by_type(tp, discipline, room, lecturer):
         lesson = None
-        if re.fullmatch("(практ|пр)", tp, flags=re.I):
+        if re.fullmatch(TimetableParser.PATTERN_PRACTICE, tp, flags=re.I):
             lesson = Practice(discipline, room, lecturer)
-        elif re.fullmatch("лек", tp, flags=re.I):
+        elif re.fullmatch(TimetableParser.PATTERN_LECTURE, tp, flags=re.I):
             lesson = Lecture(discipline, room, lecturer)
-        elif re.fullmatch("лаб", tp, flags=re.I):
+        elif re.fullmatch(TimetableParser.PATTERN_LAB, tp, flags=re.I):
             lesson = Lab(discipline, room, lecturer)
 
         return lesson
