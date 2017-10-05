@@ -9,7 +9,7 @@ import utils
 
 class TimetableSheet:
 
-    FILE_PATH = os.getcwd() + "/generated_files/timetable.xls"
+    FILE_PATH = os.getcwd() + "/files/timetable.xls"
 
     WEEKDAYS = ["Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота"]
     LECTURE_TIME = ["9-00", "10-30", "13-00", "14-40", "16-20", "18-00"]

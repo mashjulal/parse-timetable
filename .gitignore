@@ -170,7 +170,7 @@ venv.bak/
 
 # End of https://www.gitignore.io/api/python,pycharm
 
-/generated_files
+/files
 Будет удалено .idea/misc.xml
 Будет удалено .idea/modules.xml
 Будет удалено .idea/parse-timetable.iml

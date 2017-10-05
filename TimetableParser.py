@@ -14,7 +14,7 @@ class TimetableParser:
     PATTERN_LECTURE = "лек"
     PATTERN_LAB = "лаб"
 
-    FILE_PATH = os.getcwd() + "/generated_files/official_timetable.xlsx"
+    FILE_PATH = os.getcwd() + "/files/official_timetable.xlsx"
 
     def __init__(self, group_name):
         workbook = openpyxl.load_workbook(TimetableParser.FILE_PATH)
