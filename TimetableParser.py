@@ -8,6 +8,7 @@ from Lessons import *
 
 class TimetableParser:
 
+    PATTERN_MULTIPLE_DISCIPLINES_DIVIDER = "\s{3,}"
     PATTERN_SPECIFIC_WEEKS = "([0-9, ]+) н ([А-Яа-я \-A-Za-z]+)"
     PATTERN_EXCEPT_WEEKS = "кр ([0-9, ]+) н ([А-Яа-я \-A-Za-z]+)"
     PATTERN_PRACTICE = "(практ|пр)"
@@ -72,27 +73,29 @@ class TimetableParser:
             is_week_odd = (row - 4) % 2 == 0
             time = ((row - 4) % 12) // 2
 
-            weeks = filter(
-                lambda week_i: first_academic_day_index <= (week_i - 1) * 6 + weekday < last_academic_day_index,
-                list(range(1 if is_week_odd else 2, week_count + 2, 2)))
-
-            if discipline.startswith("кр"):
-                discipline_match = \
-                    re.fullmatch(TimetableParser.PATTERN_EXCEPT_WEEKS, discipline)
-                discipline = discipline_match.group(2)
+            for d in re.split(TimetableParser.PATTERN_MULTIPLE_DISCIPLINES_DIVIDER, discipline):
+                print(d)
                 weeks = filter(
-                    lambda week_i: week_i not in discipline_match.group(1).split(","),
-                    weeks)
-            elif re.fullmatch(TimetableParser.PATTERN_SPECIFIC_WEEKS, discipline):
-                discipline_match = \
-                    re.fullmatch(TimetableParser.PATTERN_SPECIFIC_WEEKS, discipline)
-                discipline = discipline_match.group(2)
-                weeks = [int(n) for n in discipline_match.group(1).split(",")]
+                    lambda week_i: first_academic_day_index <= (week_i - 1) * 6 + weekday < last_academic_day_index,
+                    list(range(1 if is_week_odd else 2, week_count + 2, 2)))
 
-            lesson = TimetableParser.get_lesson_by_type(tp, discipline, room, lecturer)
+                if d.startswith("кр"):
+                    discipline_match = \
+                        re.fullmatch(TimetableParser.PATTERN_EXCEPT_WEEKS, d)
+                    d = discipline_match.group(2)
+                    weeks = filter(
+                        lambda week_i: week_i not in discipline_match.group(1).split(","),
+                        weeks)
+                elif re.fullmatch(TimetableParser.PATTERN_SPECIFIC_WEEKS, d):
+                    discipline_match = \
+                        re.fullmatch(TimetableParser.PATTERN_SPECIFIC_WEEKS, d)
+                    d = discipline_match.group(2)
+                    weeks = [int(n) for n in discipline_match.group(1).split(",")]
 
-            for week in weeks:
-                self.timetable[week-1][weekday][time] = lesson
+                lesson = TimetableParser.get_lesson_by_type(tp, d, room, lecturer)
+
+                for week in weeks:
+                    self.timetable[week-1][weekday][time] = lesson
 
     def init_timetable(self):
         week_count = utils.get_week_count()

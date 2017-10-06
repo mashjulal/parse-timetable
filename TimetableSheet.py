@@ -17,7 +17,7 @@ class TimetableSheet:
     DISCIPLINE = "дисц"
     ROOM = "ауд"
 
-    DATE_TEMPLATE = "%d.%m.%y"
+    TEMPLATE_DATE = "%d.%m.%y"
 
     def __init__(self):
         self.workbook = xlwt.Workbook()
@@ -69,7 +69,7 @@ class TimetableSheet:
             for _ in range(len(TimetableSheet.WEEKDAYS)):
                 self.worksheet.write_merge(
                     top_row, top_row, left_column, left_column+1,
-                    datetime.datetime.strftime(dt, TimetableSheet.DATE_TEMPLATE),
+                    datetime.datetime.strftime(dt, TimetableSheet.TEMPLATE_DATE),
                     style=Styles.TITLE)
                 top_row += 7
                 dt += datetime.timedelta(1)
