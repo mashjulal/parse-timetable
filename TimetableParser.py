@@ -55,6 +55,9 @@ class TimetableParser:
         last_academic_day_index = week_count * 6 + last_academic_day.weekday()
 
         col = self.get_group_column()
+        if not col:
+            raise Exception("There is no group with that name in timetable: " + self.group_name)
+
         discipline_col = col
         type_col = col + 1
         lecturer_col = col + 2
@@ -74,7 +77,6 @@ class TimetableParser:
             time = ((row - 4) % 12) // 2
 
             for d in re.split(TimetableParser.PATTERN_MULTIPLE_DISCIPLINES_DIVIDER, discipline):
-                print(d)
                 weeks = filter(
                     lambda week_i: first_academic_day_index <= (week_i - 1) * 6 + weekday < last_academic_day_index,
                     list(range(1 if is_week_odd else 2, week_count + 2, 2)))

@@ -22,9 +22,10 @@ class TimetableSheet:
     def __init__(self):
         self.workbook = xlwt.Workbook()
         self.worksheet = self.workbook.add_sheet("Timetable")
-        self.timetable_parser = TimetableParser("БНБО-01-15")
+        self.timetable_parser = None
 
-    def generate_xls_file(self):
+    def generate_timetable_for_group(self, group_name):
+        self.timetable_parser = TimetableParser(group_name)
         self.generate_weekdays_rows()
         self.generate_lecture_times_column()
         self.generate_weeks()
