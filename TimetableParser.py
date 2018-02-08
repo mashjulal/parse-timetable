@@ -69,17 +69,17 @@ class TimetableParser:
             if not discipline:
                 continue
 
-            tp = self.timetable_sheet.cell(row=row, column=type_col).value
-            lecturer = self.timetable_sheet.cell(row=row, column=lecturer_col).value
-            room = self.timetable_sheet.cell(row=row, column=room_col).value
+            tp = self.timetable_sheet.cell(row=row, column=type_col).value or 'лек'
+            lecturer = self.timetable_sheet.cell(row=row, column=lecturer_col).value or ''
+            room = self.timetable_sheet.cell(row=row, column=room_col).value or -1
             weekday = (row - 4) // 12
             is_week_odd = (row - 4) % 2 == 0
             time = ((row - 4) % 12) // 2
 
             for d in re.split(TimetableParser.PATTERN_MULTIPLE_DISCIPLINES_DIVIDER, discipline):
-                weeks = filter(
+                weeks = list(filter(
                     lambda week_i: first_academic_day_index <= (week_i - 1) * 6 + weekday < last_academic_day_index,
-                    list(range(1 if is_week_odd else 2, week_count + 2, 2)))
+                    list(range(1 if is_week_odd else 2, week_count + 2, 2))))
 
                 if d.startswith("кр"):
                     discipline_match = \
@@ -92,7 +92,7 @@ class TimetableParser:
                     discipline_match = \
                         re.fullmatch(TimetableParser.PATTERN_SPECIFIC_WEEKS, d)
                     d = discipline_match.group(2)
-                    weeks = [int(n) for n in discipline_match.group(1).split(",")]
+                    weeks = sorted(list(set.intersection(set(weeks), [int(n) for n in discipline_match.group(1).split(",")])) or weeks)
 
                 lesson = TimetableParser.get_lesson_by_type(tp, d, room, lecturer)
 

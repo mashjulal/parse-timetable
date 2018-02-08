@@ -11,15 +11,14 @@ def get_first_academic_day():
         first_academic_day = datetime.date(cur_year, 9, 1)
     else:
         date = datetime.date(cur_year, 2, 1)
-        date += datetime.timedelta(7)
-        first_academic_day = date - datetime.timedelta(date.weekday())
+        date += datetime.timedelta(8)
+        first_academic_day = date
 
     return first_academic_day
 
 
 def get_last_academic_day():
     first_academic_day = get_first_academic_day()
-
     return first_academic_day + datetime.timedelta(7*16)
 
 
